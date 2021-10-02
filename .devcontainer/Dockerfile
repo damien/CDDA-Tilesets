@@ -9,9 +9,14 @@ ARG NODE_VERSION="none"
 RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi
 
 # Install any system dependencies required by this project.
-# At this time, this is just libvips: https://github.com/libvips/libvips
+# At this time, the only *direct* dependency is libvips: https://github.com/libvips/libvips
+#
+# However, this project has a build-time dependency on
+# This in turn depends on `pycairo` and `PyGObject`, which in turn depend on
+#
+# See: https://pygobject.readthedocs.io/en/latest/getting_started.html#ubuntu-getting-started
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends libvips
+    && apt-get -y install --no-install-recommends libvips libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0
 
 # Use Poetry to manage python dependencies
 #
